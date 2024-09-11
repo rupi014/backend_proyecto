@@ -28,5 +28,19 @@ def delete_user(db: Session, user_id: int):
         return True
     return False
 
+def update_user(db: Session, user_id: int, user: UserData):
+    db_user = db.query(Users).filter(Users.id == user_id).first()
+    if db_user:
+        db_user.username = user.username
+        db_user.email = user.email
+        db_user.password = user.password
+        db_user.telephone = user.telephone
+        db_user.address = user.address
+        db_user.role = user.role    
+        db.commit()
+        db.flush(db_user)
+        return db_user
+    return False
+
 # Funciones para la tabla Staff
 

@@ -17,7 +17,9 @@ app.include_router(users.router)
 app.include_router(staff.router)
 app.include_router(players.router)
 
-
+@app.get("/")
+async def root():
+    return {"message": "Bienvenido a la API de gestión de Vikings"}
 
 
 

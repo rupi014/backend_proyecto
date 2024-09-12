@@ -47,7 +47,7 @@ class ProductData(BaseModel):
 class OrdersData(BaseModel):
     id: int
     user_id: int
-    order_date: str
+    order_date: datetime
     total_price: float    
     status: str
 

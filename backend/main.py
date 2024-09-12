@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from schemas import *
 from models import Base
-from routers import users, staff, players, blog, products, orders
+from routers import users, staff, players, blog, products, orders, products_order
 
 
 Base.metadata.create_all(bind=engine)
@@ -19,6 +19,7 @@ app.include_router(players.router)
 app.include_router(blog.router)
 app.include_router(products.router)
 app.include_router(orders.router)
+app.include_router(products_order.router)
 
 
 @app.get("/")

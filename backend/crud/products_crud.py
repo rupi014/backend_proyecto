@@ -9,6 +9,9 @@ def get_products(db: Session):
 def get_product_by_id(db: Session, product_id: int):
     return db.query(Products).filter(Products.id == product_id).first()
 
+def get_products_by_category(db: Session, category: str):
+    return db.query(Products).filter(Products.category == category).all()
+
 def create_product(db: Session, product: ProductData):
     db_product = Products(name=product.name, description=product.description, price=product.price, image=product.image, category=product.category, stock=product.stock)
     db.add(db_product)

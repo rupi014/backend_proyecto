@@ -37,6 +37,13 @@ async def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return product
 
+@router.get("/category/{category}", response_model=list[ProductData])
+async def get_products_by_category(category: str, db: Session = Depends(get_db)):
+    products = products_crud.get_products_by_category(db, category)
+    if not products:
+        raise HTTPException(status_code=404, detail="No se encontraron productos en esa categoría")
+    return products
+
 @router.delete("/{product_id}", response_model=dict)
 async def delete_product(product_id: int, db: Session = Depends(get_db)):
     success  = products_crud.delete_product(db, product_id)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from sqlalchemy import Numeric
 
 class UserData(BaseModel):
     id: int

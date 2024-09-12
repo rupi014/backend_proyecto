@@ -9,6 +9,9 @@ def get_blog(db: Session):
 def get_blog_by_id(db: Session, blog_id: int):
     return db.query(Blog).filter(Blog.id == blog_id).first()
 
+def get_blogs_by_user(db: Session, user_id: int):
+    return db.query(Blog).filter(Blog.author_id == user_id).all()
+
 def create_blog(db: Session, blog: BlogData):
     # Verificar si el autor del blog existe en la base de datos
     author = db.query(Users).filter(Users.id == blog.author_id).first()

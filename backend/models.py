@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DECIMAL, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text, DECIMAL
 from database import Base
 from sqlalchemy.orm import relationship
 
@@ -49,7 +49,7 @@ class Products(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), index=True)
     description = Column(String(50))
-    price = Column(DECIMAL)
+    price = Column(DECIMAL(10, 2))
     image = Column(String(50))
     category = Column(String(50))
     stock = Column(Integer)
@@ -61,7 +61,7 @@ class Orders(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     order_date = Column(DateTime)
-    total_price = Column(DECIMAL)
+    total_price = Column(DECIMAL(10, 2))
     status = Column(String(50))
 
     user = relationship("Users", back_populates="orders")
@@ -73,8 +73,8 @@ class ProductOrder(Base):
     product_id = Column(Integer, ForeignKey("products.id"))
     order_id = Column(Integer, ForeignKey("orders.id"))
     quantity = Column(Integer)
-    price = Column(DECIMAL)
-    total = Column(DECIMAL)
+    price = Column(DECIMAL(10, 2))
+    total = Column(DECIMAL(10, 2))
 
     product = relationship("Products", back_populates="product_order")
     order = relationship("Orders", back_populates="product_order")

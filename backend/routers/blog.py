@@ -37,6 +37,13 @@ async def get_blog_by_id(blog_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Blog no encontrado")
     return blog
 
+@router.get("/user/{user_id}/blogs", response_model=list[BlogData])
+async def get_blogs_by_user(user_id: int, db: Session = Depends(get_db)):
+    blogs = blog_crud.get_blogs_by_user(db, user_id)
+    if not blogs:
+        raise HTTPException(status_code=404, detail="No se encontraron blogs para este usuario")
+    return blogs
+
 @router.delete("/{blog_id}", response_model=dict)
 async def delete_blog(blog_id: int, db: Session = Depends(get_db)):
     success = blog_crud.delete_blog(db, blog_id)

@@ -12,7 +12,7 @@ class Users(Base):
     address = Column(String(50))
     role = Column(String(50))
 
-    blog = relationship("Blog", back_populates="author_user")
+    blogs = relationship("Blog", back_populates="author_user")
     orders = relationship("Orders", back_populates="user")  
 
 class Staff(Base):
@@ -40,9 +40,9 @@ class Blog(Base):
     content = Column(Text)
     image = Column(String(255))
     date = Column(DateTime)
-    author_id = Column(Integer, ForeignKey("users.id"))  # Cambia 'author' por 'author_id'
+    author_id = Column(Integer, ForeignKey("users.id"))  
 
-    author_user = relationship("Users", back_populates="blog")
+    author_user = relationship("Users", back_populates="blogs")
 
 class Products(Base):
     __tablename__ = "products"

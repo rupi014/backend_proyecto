@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class UserData(BaseModel):
     id: int
@@ -26,10 +27,11 @@ class PlayerData(BaseModel):
     twitter: str
 
 class BlogData(BaseModel):
+    id: int
     title: str
     content: str
     image: str
-    date: str
+    date: datetime
     author_id: int
 
 class ProductData(BaseModel):

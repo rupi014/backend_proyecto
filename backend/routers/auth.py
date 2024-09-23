@@ -8,9 +8,13 @@ from typing import Optional
 from database import SessionLocal
 import crud.users_crud as users_crud
 from schemas import UserData
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Configuración de seguridad
-SECRET_KEY = "tu_clave_secreta_aquí"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

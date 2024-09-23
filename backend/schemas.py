@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy import Numeric
+from typing import Optional
+
 
 class UserData(BaseModel):
-    id: int
     username: str
-    email: str
+    email: Optional[str] = ""
     password: str
-    telephone: str
-    address: str
-    role: str
+    telephone: Optional[str] = ""
+    address: Optional[str] = ""
+    role: Optional[str] = ""
 
 class StaffData(BaseModel):
     id: int

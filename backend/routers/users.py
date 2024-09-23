@@ -24,6 +24,11 @@ async def create_user(user: UserData, db: Session = Depends(get_db)):
     check_user = users_crud.get_user_by_username(db, username=user.username)
     if check_user:
         raise HTTPException(status_code=400, detail="El usuario ya existe")
+    
+    check_email = users_crud.get_user_by_email(db, email=user.email)
+    if check_email:
+        raise HTTPException(status_code=400, detail="El email ya está en uso")
+    
     return users_crud.create_user(db=db, user=user)
 
 @router.get("/", response_model=list[UserData])

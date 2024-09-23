@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas import StaffData, UserData
-from routers.auth import obtener_usuario_actual
+from routers.auth import get_current_user
 import crud.staff_crud as staff_crud
 from database import engine, SessionLocal
 from models import Base
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/staff", tags=["Staff"], responses={404: {"descriptio
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=StaffData)
-async def create_staff(staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def create_staff(staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")
@@ -44,7 +44,7 @@ async def get_staff_by_id(staff_id: int, db: Session = Depends(get_db)):
     return staff
 
 @router.delete("/{staff_id}", response_model=dict)
-async def delete_staff(staff_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def delete_staff(staff_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")
@@ -55,7 +55,7 @@ async def delete_staff(staff_id: int, db: Session = Depends(get_db), usuario_act
     return {"mensaje": f"Miembro del staff con ID {staff_id} eliminado exitosamente"}
 
 @router.put("/{staff_id}", response_model=StaffData)
-async def update_staff(staff_id: int, staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def update_staff(staff_id: int, staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")

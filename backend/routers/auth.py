@@ -30,21 +30,21 @@ def get_db():
     finally:
         db.close()
 
-def verificar_contraseña(contraseña_plana, contraseña_hash):
-    return pwd_context.verify(contraseña_plana, contraseña_hash)
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-def obtener_hash_contraseña(contraseña):
-    return pwd_context.hash(contraseña)
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
-def autenticar_usuario(db: Session, username: str, password: str):
+def authenticate_user(db: Session, username: str, password: str):
     usuario = users_crud.get_user_by_username(db, username)
     if not usuario:
         return False
-    if not verificar_contraseña(password, usuario.password):
+    if not verify_password(password, usuario.password):
         return False
     return usuario
 
-def crear_token_acceso(data: dict, expires_delta: Optional[timedelta] = None):
+def create_acces_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -54,7 +54,7 @@ def crear_token_acceso(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def obtener_usuario_actual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credenciales_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudieron validar las credenciales",
@@ -74,7 +74,7 @@ async def obtener_usuario_actual(token: str = Depends(oauth2_scheme), db: Sessio
 
 @router.post("/token")
 async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    usuario = autenticar_usuario(db, form_data.username, form_data.password)
+    usuario = authenticate_user(db, form_data.username, form_data.password)
     if not usuario:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -82,13 +82,13 @@ async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = crear_token_acceso(
+    access_token = create_acces_token(
         data={"sub": usuario.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/usuarios/yo", response_model=UserData)
-async def leer_usuarios_yo(usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def leer_usuarios_yo(usuario_actual: UserData = Depends(get_current_user)):
     return usuario_actual
 
 @router.post("/registro", response_model=UserData)
@@ -96,25 +96,25 @@ async def registrar_usuario(usuario: UserData, db: Session = Depends(get_db)):
     db_usuario = users_crud.get_user_by_username(db, username=usuario.username)
     if db_usuario:
         raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado")
-    usuario.password = obtener_hash_contraseña(usuario.password)
+    usuario.password = get_password_hash(usuario.password)
     return users_crud.create_user(db=db, user=usuario)
 
 @router.get("/usuarios", response_model=list[UserData])
-async def obtener_usuarios(db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def obtener_usuarios(db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     usuarios = users_crud.get_users(db)
     if not usuarios:
         raise HTTPException(status_code=404, detail="No se encontraron usuarios")
     return usuarios
 
 @router.get("/usuarios/{user_id}", response_model=UserData)
-async def obtener_usuario_por_id(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def obtener_usuario_por_id(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     usuario = users_crud.get_user(db, user_id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario
 
 @router.delete("/usuarios/{user_id}", response_model=dict)
-async def eliminar_usuario(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def eliminar_usuario(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     usuario = users_crud.get_user(db, user_id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -122,7 +122,7 @@ async def eliminar_usuario(user_id: int, db: Session = Depends(get_db), usuario_
     return {"mensaje": f"Usuario con ID {user_id} eliminado exitosamente"}
 
 @router.put("/usuarios/{user_id}", response_model=UserData)
-async def actualizar_usuario(user_id: int, usuario: UserData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def actualizar_usuario(user_id: int, usuario: UserData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     usuario_existente = users_crud.get_user(db, user_id)
     if not usuario_existente:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

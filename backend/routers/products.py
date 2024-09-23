@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas import ProductData, UserData
-from routers.auth import obtener_usuario_actual
+from routers.auth import get_current_user
 import crud.products_crud as products_crud
 from database import engine, SessionLocal
 from models import Base
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/products", tags=["Products"], responses={404: {"desc
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=ProductData)
-async def create_product(product: ProductData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def create_product(product: ProductData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")
@@ -49,7 +49,7 @@ async def get_products_by_category(category: str, db: Session = Depends(get_db))
     return products
 
 @router.delete("/{product_id}", response_model=dict)
-async def delete_product(product_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def delete_product(product_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")
@@ -59,7 +59,7 @@ async def delete_product(product_id: int, db: Session = Depends(get_db), usuario
     return {"message": f"Producto con ID {product_id} eliminado correctamente"}
 
 @router.put("/{product_id}", response_model=ProductData)
-async def update_product(product_id: int, product: ProductData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+async def update_product(product_id: int, product: ProductData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
     if not usuario_actual:
         raise HTTPException(status_code=401, detail="No autorizado")

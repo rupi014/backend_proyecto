@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from schemas import *
 from models import Base
-from routers import users, staff, players, blog, products, orders, products_order
+from routers import users, staff, players, blog, products, orders, products_order, auth 
 
 
 Base.metadata.create_all(bind=engine)
@@ -13,6 +13,7 @@ app = FastAPI()
 
 # Routers
 
+app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(staff.router)
 app.include_router(players.router)

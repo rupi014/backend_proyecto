@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import BlogData
+from schemas import BlogData, UserData
+from routers.auth import obtener_usuario_actual
 import crud.blog_crud as blog_crud
 from database import engine, SessionLocal
 from models import Base
@@ -17,7 +18,11 @@ router = APIRouter(prefix="/blog", tags=["Blog"], responses={404: {"description"
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=BlogData)
-async def create_blog(blog: BlogData, db: Session = Depends(get_db)):
+async def create_blog(blog: BlogData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
+    
     check_blog = blog_crud.get_blog_by_id(db, blog_id=blog.id)
     if check_blog:
         raise HTTPException(status_code=400, detail="El blog ya existe")
@@ -45,14 +50,14 @@ async def get_blogs_by_user(user_id: int, db: Session = Depends(get_db)):
     return blogs
 
 @router.delete("/{blog_id}", response_model=dict)
-async def delete_blog(blog_id: int, db: Session = Depends(get_db)):
+async def delete_blog(blog_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
     success = blog_crud.delete_blog(db, blog_id)
     if not success:
         raise HTTPException(status_code=404, detail="Blog no encontrado")
     return {"message": f"Blog con ID {blog_id} eliminado correctamente"}
 
 @router.put("/{blog_id}", response_model=BlogData)
-async def update_blog(blog_id: int, blog: BlogData, db: Session = Depends(get_db)):
+async def update_blog(blog_id: int, blog: BlogData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
     db_blog = blog_crud.update_blog(db, blog_id, blog)
     if not db_blog:
         raise HTTPException(status_code=404, detail="Blog no encontrado")

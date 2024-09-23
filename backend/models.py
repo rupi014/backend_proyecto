@@ -6,10 +6,10 @@ class Users(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, index=True)
-    email = Column(String(50), unique=True, index=True)
-    password = Column(String(50))
-    telephone = Column(String(50))
-    address = Column(String(50))
+    email = Column(String(100), unique=True, index=True)
+    password = Column(String(255))
+    telephone = Column(String(15))
+    address = Column(String(255))
     role = Column(String(50))
 
     blogs = relationship("Blog", back_populates="author_user")
@@ -18,25 +18,25 @@ class Users(Base):
 class Staff(Base):
     __tablename__ = "staff"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), index=True)
+    name = Column(String(100), index=True)
     role = Column(String(50))
-    bio = Column(String(50))
-    image = Column(String(50))
+    bio = Column(String(255))
+    image = Column(String(255))
     twitter = Column(String(50))
 
 class Players(Base):
     __tablename__ = "players"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), index=True)
+    name = Column(String(100), index=True)
     role = Column(String(50))
-    bio = Column(String(50))
-    image = Column(String(50))
+    bio = Column(String(255))
+    image = Column(String(255))
     twitter = Column(String(50))
 
 class Blog(Base):
     __tablename__ = "blog"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(100))
+    title = Column(String(200))
     content = Column(Text)
     image = Column(String(255))
     date = Column(DateTime)
@@ -47,10 +47,10 @@ class Blog(Base):
 class Products(Base):
     __tablename__ = "products"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), index=True)
-    description = Column(String(50))
+    name = Column(String(100), index=True)
+    description = Column(String(255))
     price = Column(DECIMAL(10, 2))
-    image = Column(String(50))
+    image = Column(String(255))
     category = Column(String(50))
     stock = Column(Integer)
 

@@ -51,6 +51,9 @@ async def get_blogs_by_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{blog_id}", response_model=dict)
 async def delete_blog(blog_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     success = blog_crud.delete_blog(db, blog_id)
     if not success:
         raise HTTPException(status_code=404, detail="Blog no encontrado")
@@ -58,6 +61,9 @@ async def delete_blog(blog_id: int, db: Session = Depends(get_db), usuario_actua
 
 @router.put("/{blog_id}", response_model=BlogData)
 async def update_blog(blog_id: int, blog: BlogData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     db_blog = blog_crud.update_blog(db, blog_id, blog)
     if not db_blog:
         raise HTTPException(status_code=404, detail="Blog no encontrado")

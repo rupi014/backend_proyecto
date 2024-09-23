@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import PlayerData
+from schemas import PlayerData, UserData
+from routers.auth import obtener_usuario_actual
 import crud.players_crud as players_crud
 from database import engine, SessionLocal
 from models import Base
@@ -17,7 +18,10 @@ router = APIRouter(prefix="/players", tags=["Players"], responses={404: {"descri
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=PlayerData)
-async def create_players(players: PlayerData, db: Session = Depends(get_db)):
+async def create_players(players: PlayerData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     check_players = players_crud.get_players_by_id(db, player_id=players.id)
     if check_players:
         raise HTTPException(status_code=400, detail="El jugador ya existe")
@@ -38,14 +42,20 @@ async def get_players_by_id(players_id: int, db: Session = Depends(get_db)):
     return players
 
 @router.delete("/{players_id}", response_model=dict)
-async def delete_players(players_id: int, db: Session = Depends(get_db)):
+async def delete_players(players_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     success = players_crud.delete_players(db, players_id)
     if not success:
         raise HTTPException(status_code=404, detail="Jugador no encontrado")
     return {"message": f"Jugador con ID {players_id} eliminado correctamente"}       
 
 @router.put("/{players_id}", response_model=PlayerData)
-async def update_players(players_id: int, players: PlayerData, db: Session = Depends(get_db)):
+async def update_players(players_id: int, players: PlayerData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     updated_players = players_crud.update_players(db, players_id, players)
     if not updated_players:
         raise HTTPException(status_code=404, detail="Jugador no encontrado")

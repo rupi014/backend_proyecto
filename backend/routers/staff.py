@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import StaffData   
+from schemas import StaffData, UserData
+from routers.auth import obtener_usuario_actual
 import crud.staff_crud as staff_crud
 from database import engine, SessionLocal
 from models import Base
@@ -19,7 +20,10 @@ router = APIRouter(prefix="/staff", tags=["Staff"], responses={404: {"descriptio
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=StaffData)
-async def create_staff(staff: StaffData, db: Session = Depends(get_db)):
+async def create_staff(staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     check_staff = staff_crud.get_staff_by_id(db, staff_id=staff.id)
     if check_staff:
         raise HTTPException(status_code=400, detail="El miembro del staff ya existe")
@@ -40,7 +44,10 @@ async def get_staff_by_id(staff_id: int, db: Session = Depends(get_db)):
     return staff
 
 @router.delete("/{staff_id}", response_model=dict)
-async def delete_staff(staff_id: int, db: Session = Depends(get_db)):
+async def delete_staff(staff_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     staff = staff_crud.get_staff_by_id(db, staff_id)
     if not staff:
         raise HTTPException(status_code=404, detail="Miembro del staff no encontrado")
@@ -48,7 +55,10 @@ async def delete_staff(staff_id: int, db: Session = Depends(get_db)):
     return {"mensaje": f"Miembro del staff con ID {staff_id} eliminado exitosamente"}
 
 @router.put("/{staff_id}", response_model=StaffData)
-async def update_staff(staff_id: int, staff: StaffData, db: Session = Depends(get_db)):
+async def update_staff(staff_id: int, staff: StaffData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(obtener_usuario_actual)):
+    # Verificar si el usuario actual está autenticado
+    if not usuario_actual:
+        raise HTTPException(status_code=401, detail="No autorizado")
     updated_staff = staff_crud.update_staff(db, staff_id, staff)
     if not updated_staff:
         raise HTTPException(status_code=404, detail="Miembro del staff no encontrado")

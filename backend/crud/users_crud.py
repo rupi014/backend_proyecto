@@ -42,5 +42,4 @@ def update_user(db: Session, user_id: int, user: UserData):
         return db_user
     return False
 
-# Funciones para la tabla Staff
 

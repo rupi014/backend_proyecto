@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from schemas import *
 from models import Base
-from routers import users, staff, players, blog, products, orders, products_order, auth 
+from routers import staff, players, blog, products, orders, products_order, auth 
 
 
 Base.metadata.create_all(bind=engine)

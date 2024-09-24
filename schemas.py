@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class UserData(BaseModel):
-    id: int
+    id: Optional[int] = None 
     username: str
     email: Optional[str] = ""
     password: str
@@ -14,7 +14,7 @@ class UserData(BaseModel):
     role: Optional[str] = "user"
 
 class StaffData(BaseModel):
-    id: int
+    id: Optional[int] = None 
     name: str
     role: str
     bio: str
@@ -22,7 +22,7 @@ class StaffData(BaseModel):
     twitter: str
 
 class PlayerData(BaseModel):
-    id: int
+    id: Optional[int] = None  
     name: str
     role: str
     bio: str
@@ -30,7 +30,7 @@ class PlayerData(BaseModel):
     twitter: str
 
 class BlogData(BaseModel):
-    id: int
+    id: Optional[int] = None 
     title: str
     content: str
     image: str
@@ -38,7 +38,7 @@ class BlogData(BaseModel):
     author_id: int
 
 class ProductData(BaseModel):
-    id: int
+    id: Optional[int] = None  
     name: str
     description: str
     price: float    
@@ -47,14 +47,14 @@ class ProductData(BaseModel):
     stock: int      
 
 class OrdersData(BaseModel):
-    id: int
+    id: Optional[int] = None  
     user_id: int
     order_date: datetime
     total_price: float    
     status: str
 
 class ProductOrderData(BaseModel):
-    id: int
+    id: Optional[int] = None  
     product_id: int
     order_id: int
     quantity: int

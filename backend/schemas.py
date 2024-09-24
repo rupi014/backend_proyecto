@@ -5,6 +5,7 @@ from typing import Optional
 
 
 class UserData(BaseModel):
+    id: int
     username: str
     email: Optional[str] = ""
     password: str

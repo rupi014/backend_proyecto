@@ -72,6 +72,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credenciales_exception
     return usuario
 
+# Login
+
 @router.post("/token")
 async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     usuario = authenticate_user(db, form_data.username, form_data.password)
@@ -86,6 +88,8 @@ async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends
         data={"sub": usuario.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+# Usuarios
 
 @router.get("/usuarios/yo", response_model=UserData)
 async def leer_usuarios_yo(usuario_actual: UserData = Depends(get_current_user)):

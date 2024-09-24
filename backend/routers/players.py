@@ -18,9 +18,9 @@ router = APIRouter(prefix="/players", tags=["Players"], responses={404: {"descri
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=PlayerData)
-async def create_players(players: PlayerData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def create_players(players: PlayerData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     check_players = players_crud.get_players_by_id(db, player_id=players.id)
     if check_players:
@@ -42,9 +42,9 @@ async def get_players_by_id(players_id: int, db: Session = Depends(get_db)):
     return players
 
 @router.delete("/{players_id}", response_model=dict)
-async def delete_players(players_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def delete_players(players_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     success = players_crud.delete_players(db, players_id)
     if not success:
@@ -52,9 +52,9 @@ async def delete_players(players_id: int, db: Session = Depends(get_db), usuario
     return {"message": f"Jugador con ID {players_id} eliminado correctamente"}       
 
 @router.put("/{players_id}", response_model=PlayerData)
-async def update_players(players_id: int, players: PlayerData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def update_players(players_id: int, players: PlayerData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     updated_players = players_crud.update_players(db, players_id, players)
     if not updated_players:

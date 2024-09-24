@@ -18,9 +18,9 @@ router = APIRouter(prefix="/blog", tags=["Blog"], responses={404: {"description"
 Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=BlogData)
-async def create_blog(blog: BlogData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def create_blog(blog: BlogData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     
     check_blog = blog_crud.get_blog_by_id(db, blog_id=blog.id)
@@ -50,9 +50,9 @@ async def get_blogs_by_user(user_id: int, db: Session = Depends(get_db)):
     return blogs
 
 @router.delete("/{blog_id}", response_model=dict)
-async def delete_blog(blog_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def delete_blog(blog_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     success = blog_crud.delete_blog(db, blog_id)
     if not success:
@@ -60,9 +60,9 @@ async def delete_blog(blog_id: int, db: Session = Depends(get_db), usuario_actua
     return {"message": f"Blog con ID {blog_id} eliminado correctamente"}
 
 @router.put("/{blog_id}", response_model=BlogData)
-async def update_blog(blog_id: int, blog: BlogData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
+async def update_blog(blog_id: int, blog: BlogData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado
-    if not usuario_actual:
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")
     db_blog = blog_crud.update_blog(db, blog_id, blog)
     if not db_blog:

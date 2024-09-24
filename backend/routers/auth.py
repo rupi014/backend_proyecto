@@ -37,12 +37,12 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def authenticate_user(db: Session, username: str, password: str):
-    usuario = users_crud.get_user_by_username(db, username)
-    if not usuario:
+    user = users_crud.get_user_by_username(db, username)
+    if not user:
         return False
-    if not verify_password(password, usuario.password):
+    if not verify_password(password, user.password):
         return False
-    return usuario
+    return user
 
 def create_acces_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -67,17 +67,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             raise credenciales_exception
     except JWTError:
         raise credenciales_exception
-    usuario = users_crud.get_user_by_username(db, username=username)
-    if usuario is None:
+    user = users_crud.get_user_by_username(db, username=username)
+    if user is None:
         raise credenciales_exception
-    return usuario
+    return user
 
 # Login
 
 @router.post("/token")
-async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    usuario = authenticate_user(db, form_data.username, form_data.password)
-    if not usuario:
+async def access_token_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos",
@@ -85,54 +85,54 @@ async def login_para_token_acceso(form_data: OAuth2PasswordRequestForm = Depends
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_acces_token(
-        data={"sub": usuario.username}, expires_delta=access_token_expires
+        data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 # Usuarios
 
-@router.get("/usuarios/yo", response_model=UserData)
-async def leer_usuarios_yo(usuario_actual: UserData = Depends(get_current_user)):
-    return usuario_actual
+@router.get("/users/me", response_model=UserData)
+async def read_users_me(actual_user: UserData = Depends(get_current_user)):
+    return actual_user
 
-@router.post("/registro", response_model=UserData)
-async def registrar_usuario(usuario: UserData, db: Session = Depends(get_db)):
-    db_usuario = users_crud.get_user_by_username(db, username=usuario.username)
-    if db_usuario:
+@router.post("/register", response_model=UserData)
+async def register_user(user: UserData, db: Session = Depends(get_db)):
+    db_user = users_crud.get_user_by_username(db, username=user.username)
+    if db_user:
         raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado")
-    usuario.password = get_password_hash(usuario.password)
-    return users_crud.create_user(db=db, user=usuario)
+    user.password = get_password_hash(user.password)
+    return users_crud.create_user(db=db, user=user)
 
-@router.get("/usuarios", response_model=list[UserData])
-async def obtener_usuarios(db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
-    usuarios = users_crud.get_users(db)
-    if not usuarios:
+@router.get("/users", response_model=list[UserData])
+async def read_users(db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
+    users = users_crud.get_users(db)
+    if not users:
         raise HTTPException(status_code=404, detail="No se encontraron usuarios")
-    return usuarios
+    return users
 
-@router.get("/usuarios/{user_id}", response_model=UserData)
-async def obtener_usuario_por_id(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
-    usuario = users_crud.get_user(db, user_id)
-    if not usuario:
+@router.get("/users/{user_id}", response_model=UserData)
+async def read_user_by_id(user_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
+    user = users_crud.get_user(db, user_id)
+    if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return usuario
+    return user
 
-@router.delete("/usuarios/{user_id}", response_model=dict)
-async def eliminar_usuario(user_id: int, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
-    usuario = users_crud.get_user(db, user_id)
-    if not usuario:
+@router.delete("/users/{user_id}", response_model=dict)
+async def delete_user(user_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
+    user = users_crud.get_user(db, user_id)
+    if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     users_crud.delete_user(db, user_id)
     return {"mensaje": f"Usuario con ID {user_id} eliminado exitosamente"}
 
-@router.put("/usuarios/{user_id}", response_model=UserData)
-async def actualizar_usuario(user_id: int, usuario: UserData, db: Session = Depends(get_db), usuario_actual: UserData = Depends(get_current_user)):
-    usuario_existente = users_crud.get_user(db, user_id)
-    if not usuario_existente:
+@router.put("/users/{user_id}", response_model=UserData)
+async def update_user(user_id: int, user: UserData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
+    user_exist = users_crud.get_user(db, user_id)
+    if not user_exist:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
-    usuario_actualizado = users_crud.update_user(db, user_id, usuario)
-    if not usuario_actualizado:
+    user_updated = users_crud.update_user(db, user_id, user)
+    if not user_updated:
         raise HTTPException(status_code=500, detail="Error al actualizar el usuario")
     
-    return usuario_actualizado
+    return user_updated

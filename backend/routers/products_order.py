@@ -20,31 +20,31 @@ Base.metadata.create_all(bind=engine)
 # Ruta para agregar un producto a un pedido
 @router.post("/", response_model=ProductOrderData)
 async def add_product_to_order(product_order: ProductOrderData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return products_order_crud.add_product_to_order(db=db, product_order=product_order)
 
 # Ruta para obtener todos los productos de un pedido
 @router.get("/{product_order_id}", response_model=list[ProductOrderData])
 async def get_products_order(product_order_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return products_order_crud.get_products_order_by_id(db=db, products_order_id=product_order_id)
 
 # Ruta para eliminar un producto de un pedido
 @router.delete("/{order_id}/{product_id}", response_model=dict)
 async def delete_product_from_order(order_id: int, product_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return products_order_crud.delete_product_from_order(db=db, order_id=order_id, product_id=product_id)
 
 # Ruta para actualizar un producto de un pedido
 @router.put("/{order_id}/{product_id}", response_model=ProductOrderData)
 async def update_product_from_order(order_id: int, product_id: int, product_order: ProductOrderData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return products_order_crud.update_product_from_order(db=db, order_id=order_id, product_id=product_id, product_order=product_order)

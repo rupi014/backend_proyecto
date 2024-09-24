@@ -19,8 +19,8 @@ Base.metadata.create_all(bind=engine)
 
 @router.post("/", response_model=OrdersData)
 async def create_order(order: OrdersData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return orders_crud.create_order(db=db, order=order)
 
@@ -47,8 +47,8 @@ async def get_orders_by_user_id(user_id: int, db: Session = Depends(get_db), act
 
 @router.delete("/{order_id}", response_model=dict)
 async def delete_order(order_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user) ):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     success = orders_crud.delete_order(db=db, order_id=order_id) 
     if not success:
@@ -57,8 +57,8 @@ async def delete_order(order_id: int, db: Session = Depends(get_db), actual_user
 
 @router.put("/{order_id}", response_model=OrdersData)
 async def update_order(order_id: int, order: OrdersData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")    
     return orders_crud.update_order(db=db, order_id=order_id, order=order)
 

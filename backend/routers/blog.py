@@ -51,8 +51,8 @@ async def get_blogs_by_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{blog_id}", response_model=dict)
 async def delete_blog(blog_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado
-    if not actual_user:
+    # Verificar si el usuario actual está autenticado y es administrador
+    if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     success = blog_crud.delete_blog(db, blog_id)
     if not success:

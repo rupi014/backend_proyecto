@@ -106,14 +106,14 @@ async def register_user(user: UserData, db: Session = Depends(get_db)):
 @router.get("/users", response_model=list[UserData])
 async def read_users(db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     users = users_crud.get_users(db)
-    if not users:
+    if not users or actual_user.role != "admin":
         raise HTTPException(status_code=404, detail="No se encontraron usuarios")
     return users
 
 @router.get("/users/{user_id}", response_model=UserData)
 async def read_user_by_id(user_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     user = users_crud.get_user(db, user_id)
-    if not user:
+    if not user or actual_user.role != "admin":
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return user
 
@@ -122,15 +122,16 @@ async def delete_user(user_id: int, db: Session = Depends(get_db), actual_user: 
     user = users_crud.get_user(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if actual_user.role != "admin":
+        raise HTTPException(status_code=401, detail="No autorizado")
     users_crud.delete_user(db, user_id)
     return {"mensaje": f"Usuario con ID {user_id} eliminado exitosamente"}
 
 @router.put("/users/{user_id}", response_model=UserData)
 async def update_user(user_id: int, user: UserData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     user_exist = users_crud.get_user(db, user_id)
-    if not user_exist:
+    if not user_exist or actual_user.role != "admin":
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    
     user_updated = users_crud.update_user(db, user_id, user)
     if not user_updated:
         raise HTTPException(status_code=500, detail="Error al actualizar el usuario")

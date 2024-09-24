@@ -10,7 +10,7 @@ class UserData(BaseModel):
     password: str
     telephone: Optional[str] = ""
     address: Optional[str] = ""
-    role: Optional[str] = ""
+    role: Optional[str] = "user"
 
 class StaffData(BaseModel):
     id: int

@@ -12,7 +12,7 @@ def get_db():
     try: 
         yield db
     finally:
-        db.close
+        db.close()
 
 
 router = APIRouter(prefix="/staff", tags=["Staff"], responses={404: {"description": "No encontrado"}})

@@ -15,7 +15,8 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "https://vikingsdb.up.railway.app",
-    "http://vikingsdb.up.railway.app"
+    "http://vikingsdb.up.railway.app",
+    "https://vikingsapi.netlify.app"
 ]
 
 app.add_middleware(

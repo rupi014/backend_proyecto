@@ -14,7 +14,8 @@ app = FastAPI()
 # Configurar CORS
 origins = [
     "http://localhost:3000",
-    "https://vikingsdb.up.railway.app/"
+    "https://vikingsdb.up.railway.app",
+    "http://vikingsdb.up.railway.app"
 ]
 
 app.add_middleware(

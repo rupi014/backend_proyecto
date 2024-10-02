@@ -45,6 +45,7 @@ class ProductData(BaseModel):
     image: str
     category: str
     stock: int      
+    size: str
 
 class OrdersData(BaseModel):
     id: Optional[int] = None  
@@ -60,5 +61,5 @@ class ProductOrderData(BaseModel):
     quantity: int
     price: float
     total: float
-
+    size: str
 

@@ -16,7 +16,7 @@ def get_products_order_by_id(db: Session, products_order_id: int):
 
 # Funcion para agregar un producto a un pedido
 def add_product_to_order(db: Session, product_order: ProductOrder):
-    db_product_order = ProductOrder(product_id=product_order.product_id, order_id=product_order.order_id, quantity=product_order.quantity, price=product_order.price, total=product_order.total)
+    db_product_order = ProductOrder(product_id=product_order.product_id, order_id=product_order.order_id, quantity=product_order.quantity, price=product_order.price, total=product_order.total, size=product_order.size)
     db.add(db_product_order)
     db.commit()
     db.flush(db_product_order)
@@ -42,5 +42,6 @@ def update_product_from_order(db: Session, order_id: int, product_id: int, produ
     db_product_order.quantity = product_order.quantity
     db_product_order.price = product_order.price
     db_product_order.total = product_order.total
+    db_product_order.size = product_order.size
     db.commit()
     return db_product_order

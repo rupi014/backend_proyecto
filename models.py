@@ -53,6 +53,7 @@ class Products(Base):
     image = Column(String(255))
     category = Column(String(50))
     stock = Column(Integer)
+    size = Column(String(50))   
 
     product_order = relationship("ProductOrder", back_populates="product")
 
@@ -75,7 +76,8 @@ class ProductOrder(Base):
     quantity = Column(Integer)
     price = Column(DECIMAL(10, 2))
     total = Column(DECIMAL(10, 2))
-
+    size = Column(String(50))
+    
     product = relationship("Products", back_populates="product_order")
     order = relationship("Orders", back_populates="product_order")
 

@@ -13,7 +13,7 @@ def get_products_by_category(db: Session, category: str):
     return db.query(Products).filter(Products.category == category).all()
 
 def create_product(db: Session, product: ProductData):
-    db_product = Products(name=product.name, description=product.description, price=product.price, image=product.image, category=product.category, stock=product.stock)
+    db_product = Products(name=product.name, description=product.description, price=product.price, image=product.image, category=product.category, stock=product.stock, size=product.size)
     db.add(db_product)
     db.commit()
     db.flush(db_product)
@@ -35,6 +35,7 @@ def update_product(db: Session, product_id: int, product: ProductData):
         db_product.price = product.price
         db_product.image = product.image
         db_product.stock = product.stock
+        db_product.size = product.size
         db.commit()
         db.flush(db_product)
         return db_product

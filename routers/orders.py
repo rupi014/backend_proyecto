@@ -20,7 +20,7 @@ Base.metadata.create_all(bind=engine)
 @router.post("/", response_model=OrdersData)
 async def create_order(order: OrdersData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado y es administrador
-    if not actual_user or actual_user.role != "admin":
+    if not actual_user:
         raise HTTPException(status_code=401, detail="No autorizado")    
     return orders_crud.create_order(db=db, order=order)
 

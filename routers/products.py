@@ -67,4 +67,3 @@ async def update_product(product_id: int, product: ProductData, db: Session = De
     if not product:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return product
-

@@ -44,8 +44,11 @@ class ProductData(BaseModel):
     price: float    
     image: str
     category: str
-    stock: int      
-    size: Optional[str] = None
+    stock: int
+    product_size: Optional[str] = None  # Nuevo nombre de campo
+
+    class Config:
+        orm_mode = True
 
 class OrdersData(BaseModel):
     id: Optional[int] = None  
@@ -61,5 +64,8 @@ class ProductOrderData(BaseModel):
     quantity: int
     price: float
     total: float
-    size: Optional[str] = None
+    order_size: Optional[str] = None  # Nuevo nombre de campo
+
+    class Config:
+        orm_mode = True
 

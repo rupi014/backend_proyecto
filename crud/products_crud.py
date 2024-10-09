@@ -42,6 +42,7 @@ def update_product(db: Session, product_id: int, product: ProductData):
         db_product.description = product.description
         db_product.price = product.price
         db_product.image = product.image
+        db_product.category = product.category
         db_product.stock = product.stock
         db_product.product_size = product.product_size  # Nuevo nombre de campo
         db.commit()

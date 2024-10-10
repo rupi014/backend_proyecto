@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from models import *
 from schemas import *
 
+# Funciones para la gestion de staff
 def get_staff(db: Session):
     return db.query(Staff).all()
 

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import Numeric
 from typing import Optional
 
+# Esquemas de la API
 
 class UserData(BaseModel):
     id: Optional[int] = None 
@@ -45,7 +46,7 @@ class ProductData(BaseModel):
     image: str
     category: str
     stock: int
-    product_size: Optional[str] = None  # Nuevo nombre de campo
+    product_size: Optional[str] = None 
 
     class Config:
         orm_mode = True
@@ -64,7 +65,7 @@ class ProductOrderData(BaseModel):
     quantity: int
     price: float
     total: float
-    order_size: Optional[str] = None  # Nuevo nombre de campo
+    order_size: Optional[str] = None 
 
     class Config:
         orm_mode = True

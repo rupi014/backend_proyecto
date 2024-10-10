@@ -3,6 +3,9 @@ from models import *
 from schemas import *
 from fastapi import HTTPException
 
+
+# Funciones para la gestion de blogs
+
 def get_blog(db: Session):
     return db.query(Blog).all()
 
@@ -13,7 +16,6 @@ def get_blogs_by_user(db: Session, user_id: int):
     return db.query(Blog).filter(Blog.author_id == user_id).all()
 
 def create_blog(db: Session, blog: BlogData):
-    # Verificar si el autor del blog existe en la base de datos
     author = db.query(Users).filter(Users.id == blog.author_id).first()
     if not author:
         raise HTTPException(status_code=404, detail="El autor del blog no existe")

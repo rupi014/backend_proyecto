@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from models import *
 from schemas import *
 
+# Funciones para la gestion de jugadores
 def get_players(db: Session):
     return db.query(Players).all()
 

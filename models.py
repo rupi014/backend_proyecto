@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, T
 from database import Base
 from sqlalchemy.orm import relationship
 
+# Modelos de la base de datos
+
 class Users(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -53,7 +55,7 @@ class Products(Base):
     image = Column(String(255))
     category = Column(String(50))
     stock = Column(Integer)
-    product_size = Column(String(50))  # Nuevo nombre de la columna
+    product_size = Column(String(50)) 
 
     product_order = relationship("ProductOrder", back_populates="product")
 
@@ -76,7 +78,7 @@ class ProductOrder(Base):
     quantity = Column(Integer)
     price = Column(DECIMAL(10, 2))
     total = Column(DECIMAL(10, 2))
-    order_size = Column(String(50))  # Nuevo nombre de la columna
+    order_size = Column(String(50)) 
 
     product = relationship("Products", back_populates="product_order")
     order = relationship("Orders", back_populates="product_order")

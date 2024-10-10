@@ -3,6 +3,7 @@ from models import *
 from schemas import *
 from fastapi import HTTPException
 
+# Funciones para la gestion de productos
 def get_products(db: Session):
     return db.query(Products).all()
 
@@ -20,11 +21,11 @@ def create_product(db: Session, product: ProductData):
         image=product.image,
         category=product.category,
         stock=product.stock,
-        product_size=product.product_size  # Nuevo nombre de campo
+        product_size=product.product_size
     )
     db.add(db_product)
     db.commit()
-    db.refresh(db_product)  # Usar refresh en lugar de flush para obtener los datos actualizados
+    db.refresh(db_product)
     return db_product
 
 def delete_product(db: Session, product_id: int):
@@ -44,9 +45,9 @@ def update_product(db: Session, product_id: int, product: ProductData):
         db_product.image = product.image
         db_product.category = product.category
         db_product.stock = product.stock
-        db_product.product_size = product.product_size  # Nuevo nombre de campo
+        db_product.product_size = product.product_size
         db.commit()
-        db.refresh(db_product)  # Usar refresh en lugar de flush para obtener los datos actualizados
+        db.refresh(db_product)
         return db_product
     return False
 

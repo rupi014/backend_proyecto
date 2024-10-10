@@ -3,7 +3,7 @@ from models import *
 from schemas import *
 from fastapi import HTTPException
 
-
+# Funciones para la gestion de pedidos
 def get_orders(db: Session):
     return db.query(Orders).all()
 

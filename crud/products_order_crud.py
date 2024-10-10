@@ -3,18 +3,18 @@ from models import *
 from schemas import *
 from fastapi import HTTPException
 
-# Funcion para obtener todos los productos de un pedido
+# Funciones para la gestion de productos de pedido
 def get_products_order(db: Session):
     return db.query(ProductOrder).all()
 
-# Funcion para obtener un producto de un pedido por id
+
 def get_products_order_by_id(db: Session, products_order_id: int):
     order = db.query(Orders).filter(Orders.id == products_order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Orden no encontrada")
     return db.query(ProductOrder).filter(ProductOrder.order_id == products_order_id).all()
 
-# Funcion para agregar un producto a un pedido
+
 def add_product_to_order(db: Session, product_order: ProductOrderData):
     db_product_order = ProductOrder(
         product_id=product_order.product_id,
@@ -22,14 +22,13 @@ def add_product_to_order(db: Session, product_order: ProductOrderData):
         quantity=product_order.quantity,
         price=product_order.price,
         total=product_order.total,
-        order_size=product_order.order_size  # Nuevo nombre de campo
+        order_size=product_order.order_size
     )
     db.add(db_product_order)
     db.commit()
-    db.refresh(db_product_order)  # Usar refresh en lugar de flush para obtener los datos actualizados
+    db.refresh(db_product_order)
     return db_product_order
 
-# Funcion para eliminar un producto de un pedido
 def delete_product_from_order(db: Session, order_id: int, product_id: int):
     product_order = db.query(ProductOrder).filter(ProductOrder.order_id == order_id, ProductOrder.product_id == product_id).first()
     if not product_order:
@@ -39,7 +38,6 @@ def delete_product_from_order(db: Session, order_id: int, product_id: int):
     db.commit()
     return {"message": "Producto eliminado del pedido"}
 
-# Funcion para actualizar un producto de un pedido
 def update_product_from_order(db: Session, order_id: int, product_id: int, product_order: ProductOrderData):
     db_product_order = db.query(ProductOrder).filter(ProductOrder.order_id == order_id, ProductOrder.product_id == product_id).first()
     if db_product_order is None:
@@ -49,7 +47,7 @@ def update_product_from_order(db: Session, order_id: int, product_id: int, produ
     db_product_order.quantity = product_order.quantity
     db_product_order.price = product_order.price
     db_product_order.total = product_order.total
-    db_product_order.order_size = product_order.order_size  # Nuevo nombre de campo
+    db_product_order.order_size = product_order.order_size 
     db.commit()
-    db.refresh(db_product_order)  # Usar refresh en lugar de flush para obtener los datos actualizados
+    db.refresh(db_product_order) 
     return db_product_order

@@ -13,7 +13,7 @@ import os
 
 load_dotenv()
 
-# Configuración de seguridad
+# Configuracion de seguridad
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
@@ -30,6 +30,7 @@ def get_db():
     finally:
         db.close()
 
+# Funciones de seguridad
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -44,6 +45,7 @@ def authenticate_user(db: Session, username: str, password: str):
         return False
     return user
 
+# Funcion para crear un token de acceso
 def create_acces_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
@@ -54,6 +56,7 @@ def create_acces_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# Funcion para obtener el usuario actual
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credenciales_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -72,8 +75,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credenciales_exception
     return user
 
-# Login
 
+# Ruta para obtener un token de acceso  
 @router.post("/token")
 async def access_token_login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -89,8 +92,7 @@ async def access_token_login(form_data: OAuth2PasswordRequestForm = Depends(), d
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# Usuarios
-
+# Rutas para la gestion de usuarios
 @router.get("/users/me", response_model=UserData)
 async def read_users_me(actual_user: UserData = Depends(get_current_user)):
     return actual_user

@@ -2,8 +2,7 @@ from sqlalchemy.orm import Session
 from models import *
 from schemas import *
 
-# Funciones para la tabla Users
-
+# Funciones para la gestion de usuarios
 def get_users(db: Session):
     return db.query(Users).all()
 

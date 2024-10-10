@@ -17,9 +17,10 @@ router = APIRouter(prefix="/products", tags=["Products"], responses={404: {"desc
 
 Base.metadata.create_all(bind=engine)
 
+# Rutas para la gestion de productos
+
 @router.post("/", response_model=ProductData)
 async def create_product(product: ProductData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado y es administrador
     if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     check_product = products_crud.get_product_by_id(db, product_id=product.id)
@@ -50,7 +51,6 @@ async def get_products_by_category(category: str, db: Session = Depends(get_db))
 
 @router.delete("/{product_id}", response_model=dict)
 async def delete_product(product_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado y es administrador
     if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     success  = products_crud.delete_product(db, product_id)
@@ -60,7 +60,6 @@ async def delete_product(product_id: int, db: Session = Depends(get_db), actual_
 
 @router.put("/{product_id}", response_model=ProductData)
 async def update_product(product_id: int, product: ProductData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado y es administrador
     if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     product = products_crud.update_product(db, product_id, product)

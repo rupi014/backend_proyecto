@@ -17,6 +17,8 @@ router = APIRouter(prefix="/players", tags=["Players"], responses={404: {"descri
 
 Base.metadata.create_all(bind=engine)
 
+# Funciones para la gestion de jugadores
+
 @router.post("/", response_model=PlayerData)
 async def create_players(players: PlayerData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
     # Verificar si el usuario actual está autenticado y es administrador
@@ -43,7 +45,6 @@ async def get_players_by_id(players_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{players_id}", response_model=dict)
 async def delete_players(players_id: int, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado y es administrador
     if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     success = players_crud.delete_players(db, players_id)
@@ -53,7 +54,6 @@ async def delete_players(players_id: int, db: Session = Depends(get_db), actual_
 
 @router.put("/{players_id}", response_model=PlayerData)
 async def update_players(players_id: int, players: PlayerData, db: Session = Depends(get_db), actual_user: UserData = Depends(get_current_user)):
-    # Verificar si el usuario actual está autenticado y es administrador
     if not actual_user or actual_user.role != "admin":
         raise HTTPException(status_code=401, detail="No autorizado")
     updated_players = players_crud.update_players(db, players_id, players)

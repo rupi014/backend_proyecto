@@ -11,7 +11,8 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configurar CORS
+# Configuracion de CORS
+
 origins = [
     "http://localhost:3000",
     "https://vikingsdb.up.railway.app",
@@ -27,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
+# Routas de la API
 
 app.include_router(auth.router)
 app.include_router(staff.router)
@@ -37,11 +38,13 @@ app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(products_order.router)
 
+# Ruta principal de la API
 
 @app.get("/")
 async def root():
     return {"message": "Bienvenido a la API de gestión de Vikings"}
 
+# Ejecutar la API
 
 if __name__ == "__main__":
     import uvicorn

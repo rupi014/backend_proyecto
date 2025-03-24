@@ -38,12 +38,20 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def authenticate_user(db: Session, username: str, password: str):
-    user = users_crud.get_user_by_username(db, username)
-    if not user:
+    try:
+        print(f"Intentando obtener el usuario: {username}")
+        user = users_crud.get_user_by_username(db, username)
+        if not user:
+            print(f"Usuario no encontrado: {username}")
+            return False
+        if not verify_password(password, user.password):
+            print(f"Contraseña incorrecta para el usuario: {username}")
+            return False
+        print(f"Usuario autenticado: {username}")
+        return user
+    except Exception as e:
+        print(f"Error durante la autenticación del usuario {username}: {e}")
         return False
-    if not verify_password(password, user.password):
-        return False
-    return user
 
 # Funcion para crear un token de acceso
 def create_acces_token(data: dict, expires_delta: Optional[timedelta] = None):

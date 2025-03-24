@@ -10,7 +10,14 @@ def get_user(db: Session, user_id: int):
     return db.query(Users).filter(Users.id == user_id).first()
 
 def get_user_by_username(db: Session, username: str):
-    return db.query(Users).filter(Users.username == username).first()
+    try:
+        print(f"Intentando obtener el usuario por nombre de usuario: {username}")
+        user = db.query(Users).filter(Users.username == username).first()
+        print(f"Usuario obtenido: {user}") # Imprime el resultado
+        return user
+    except Exception as e:
+        print(f"Error al obtener el usuario {username}: {e}")
+        return None
 
 def get_user_by_email(db: Session, email: str):
     return db.query(Users).filter(Users.email == email).first()
@@ -38,10 +45,9 @@ def update_user(db: Session, user_id: int, user: UserData):
         db_user.password = user.password
         db_user.telephone = user.telephone
         db_user.address = user.address
-        db_user.role = user.role    
+        db_user.role = user.role
         db.commit()
         db.flush(db_user)
         return db_user
     return False
-
 
